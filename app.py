@@ -6,18 +6,18 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from config import (
+from src.config import (
     ACCENT_AMBER, ACCENT_CYAN, ACCENT_GREEN, ACCENT_ROSE,
     CATEGORIES, SIZES,
 )
 from src.analytics import category_waterfall, executive_kpis, hourly_sales_heatmap, pareto_chart
-from src.classification_engine import (
+from src.mining import (
     attribute_relevance, classify_order, confusion_chart, order_tiers,
     relevance_chart, roc_chart, train_decision_tree,
+    predict_basket_price, qq_plot, residual_plot, train_regressors,
 )
-from src.components import inject_css, metric_card
-from src.regression_engine import predict_basket_price, qq_plot, residual_plot, train_regressors
-from src.warehouse_engine import build_star_schema, joined_sales, roll_up, slice_dice
+from src.ui import inject_css, metric_card
+from src.warehouse import build_star_schema, joined_sales, roll_up, slice_dice
 
 st.set_page_config(
     page_title="Pizza MDW & Predictive Intelligence", layout="wide",
