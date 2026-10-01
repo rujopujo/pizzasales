@@ -1,4 +1,4 @@
-"""Order tier feature relevance, decision trees, and prediction sandbox."""
+"""Order tier feature relevance, decision trees, and prediction sandbox in warm pizza light mode."""
 
 from __future__ import annotations
 
@@ -16,11 +16,19 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.tree import DecisionTreeClassifier
 
-from src.config.settings import ACCENT_AMBER, ACCENT_CYAN, ACCENT_GREEN, ACCENT_ROSE, CATEGORIES, SIZES
+from src.config.settings import (
+    ACCENT_AMBER,
+    ACCENT_ORANGE,
+    ACCENT_RED,
+    ACCENT_YELLOW,
+    CATEGORIES,
+    SIZES,
+    TEXT,
+)
 from src.mining.regression_engine import CATEGORICAL, FEATURES, NUMERIC, feature_frame
 
 TIERS = ["Budget", "Standard", "Premium"]
-COLORS = [ACCENT_GREEN, ACCENT_CYAN, ACCENT_ROSE]
+COLORS = [ACCENT_YELLOW, ACCENT_ORANGE, ACCENT_RED]  # Yellow -> Orange -> Red tiers
 
 
 def order_tiers(frame: pd.DataFrame) -> pd.Series:
@@ -70,12 +78,26 @@ def attribute_relevance(frame: pd.DataFrame) -> pd.DataFrame:
 def relevance_chart(scores: pd.DataFrame) -> go.Figure:
     ordered = scores.sort_values("Random Forest Importance")
     fig = go.Figure()
-    fig.add_bar(y=ordered["Feature"], x=ordered["Mutual Information"], name="Mutual Information",
-                orientation="h", marker_color=ACCENT_CYAN)
-    fig.add_bar(y=ordered["Feature"], x=ordered["Random Forest Importance"],
-                name="Random Forest Importance", orientation="h", marker_color=ACCENT_AMBER)
-    fig.update_layout(title="Attribute relevance for order tier", barmode="group", xaxis_title="Score",
-                      legend=dict(orientation="h", y=1.12))
+    fig.add_bar(
+        y=ordered["Feature"],
+        x=ordered["Mutual Information"],
+        name="Mutual Information",
+        orientation="h",
+        marker_color=ACCENT_ORANGE,
+    )
+    fig.add_bar(
+        y=ordered["Feature"],
+        x=ordered["Random Forest Importance"],
+        name="Random Forest Importance",
+        orientation="h",
+        marker_color=ACCENT_RED,
+    )
+    fig.update_layout(
+        title="Attribute relevance for order tier",
+        barmode="group",
+        xaxis_title="Score",
+        legend=dict(orientation="h", y=1.12),
+    )
     return _style(fig)
 
 
@@ -146,8 +168,14 @@ def train_decision_tree(
 def confusion_chart(result: ClassificationResult) -> go.Figure:
     labels = result.classes.tolist()
     fig = go.Figure(go.Heatmap(
-        z=result.confusion, x=labels, y=labels, zmin=0, zmax=1,
-        colorscale="Teal", text=np.round(result.confusion, 2), texttemplate="%{text:.2f}",
+        z=result.confusion,
+        x=labels,
+        y=labels,
+        zmin=0,
+        zmax=1,
+        colorscale="YlOrRd",  # Yellow-Orange-Red heatmap
+        text=np.round(result.confusion, 2),
+        texttemplate="%{text:.2f}",
         hovertemplate="Actual %{y}<br>Predicted %{x}<br>%{z:.1%}<extra></extra>",
         colorbar=dict(title="Row share"),
     ))
@@ -163,13 +191,28 @@ def roc_chart(result: ClassificationResult) -> go.Figure:
         if binary.min() == binary.max():
             continue
         false_positive, true_positive, _ = roc_curve(binary, result.probabilities[:, index])
-        color = COLORS[TIERS.index(tier)] if tier in TIERS else ACCENT_CYAN
-        fig.add_scatter(x=false_positive, y=true_positive, mode="lines",
-                        name=f"{tier} (AUC {result.auc[tier]:.3f})", line=dict(color=color, width=3))
-    fig.add_scatter(x=[0, 1], y=[0, 1], mode="lines", name="Chance",
-                    line=dict(color="rgba(255,255,255,0.45)", dash="dash"))
-    fig.update_layout(title="One-vs-rest ROC curves", xaxis_title="False positive rate",
-                      yaxis_title="True positive rate", xaxis=dict(range=[0, 1]), yaxis=dict(range=[0, 1]))
+        color = COLORS[TIERS.index(tier)] if tier in TIERS else ACCENT_ORANGE
+        fig.add_scatter(
+            x=false_positive,
+            y=true_positive,
+            mode="lines",
+            name=f"{tier} (AUC {result.auc[tier]:.3f})",
+            line=dict(color=color, width=3),
+        )
+    fig.add_scatter(
+        x=[0, 1],
+        y=[0, 1],
+        mode="lines",
+        name="Chance",
+        line=dict(color="rgba(120, 113, 108, 0.45)", dash="dash"),
+    )
+    fig.update_layout(
+        title="One-vs-rest ROC curves",
+        xaxis_title="False positive rate",
+        yaxis_title="True positive rate",
+        xaxis=dict(range=[0, 1]),
+        yaxis=dict(range=[0, 1]),
+    )
     return _style(fig)
 
 
@@ -192,7 +235,14 @@ def classify_order(
 
 
 def _style(fig: go.Figure) -> go.Figure:
-    fig.update_layout(template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)",
-                      plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#F9FAFB"),
-                      margin=dict(l=20, r=20, t=50, b=30), height=400)
+    fig.update_layout(
+        template="plotly_white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=TEXT, family="Plus Jakarta Sans, sans-serif"),
+        margin=dict(l=25, r=25, t=50, b=30),
+        height=400,
+    )
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
+    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
     return fig

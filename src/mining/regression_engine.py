@@ -1,4 +1,4 @@
-"""Price regression models, diagnostics, and basket inference."""
+"""Price regression models, diagnostics, and basket inference in warm pizza light mode."""
 
 from __future__ import annotations
 
@@ -16,7 +16,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
-from src.config.settings import ACCENT_CYAN, ACCENT_GREEN, ACCENT_ROSE, CATEGORIES, SIZES
+from src.config.settings import (
+    ACCENT_AMBER,
+    ACCENT_ORANGE,
+    ACCENT_RED,
+    ACCENT_YELLOW,
+    CATEGORIES,
+    SIZES,
+    TEXT,
+)
 
 FEATURES = ["quantity", "unit_price", "order_hour", "pizza_size", "pizza_category"]
 NUMERIC = ["quantity", "unit_price", "order_hour"]
@@ -85,10 +93,14 @@ def residual_plot(result: RegressionResult, model_name: str) -> go.Figure:
     fitted = result.predictions[model_name]
     residuals = result.y_test - fitted
     fig = go.Figure(go.Scatter(
-        x=fitted, y=residuals, mode="markers", marker=dict(color=ACCENT_CYAN, opacity=0.65, size=7),
-        customdata=result.y_test, hovertemplate="Fitted $%{x:.2f}<br>Residual $%{y:.2f}<br>Actual $%{customdata:.2f}<extra></extra>",
+        x=fitted,
+        y=residuals,
+        mode="markers",
+        marker=dict(color=ACCENT_ORANGE, opacity=0.75, size=8, line=dict(width=1, color=ACCENT_RED)),
+        customdata=result.y_test,
+        hovertemplate="Fitted $%{x:.2f}<br>Residual $%{y:.2f}<br>Actual $%{customdata:.2f}<extra></extra>",
     ))
-    fig.add_hline(y=0, line_color=ACCENT_ROSE, line_dash="dash")
+    fig.add_hline(y=0, line_color=ACCENT_RED, line_dash="dash", line_width=2)
     fig.update_layout(title=f"Residuals · {model_name}", xaxis_title="Fitted price ($)", yaxis_title="Residual ($)")
     return _style(fig)
 
@@ -98,13 +110,26 @@ def qq_plot(result: RegressionResult, model_name: str) -> go.Figure:
     theoretical, ordered = stats.probplot(residuals, dist="norm", fit=False)
     slope, intercept, _ = stats.probplot(residuals, dist="norm", fit=True)[1]
     fig = go.Figure()
-    fig.add_scatter(x=theoretical, y=ordered, mode="markers", name="Residual quantiles",
-                    marker=dict(color=ACCENT_GREEN, opacity=0.7))
+    fig.add_scatter(
+        x=theoretical,
+        y=ordered,
+        mode="markers",
+        name="Residual quantiles",
+        marker=dict(color=ACCENT_AMBER, opacity=0.85, size=7, line=dict(width=1, color=ACCENT_YELLOW)),
+    )
     endpoints = np.array([min(theoretical), max(theoretical)])
-    fig.add_scatter(x=endpoints, y=slope * endpoints + intercept, mode="lines", name="Normal reference",
-                    line=dict(color=ACCENT_ROSE, dash="dash"))
-    fig.update_layout(title=f"Residual QQ · {model_name}", xaxis_title="Theoretical normal quantiles",
-                      yaxis_title="Observed residual quantiles")
+    fig.add_scatter(
+        x=endpoints,
+        y=slope * endpoints + intercept,
+        mode="lines",
+        name="Normal reference",
+        line=dict(color=ACCENT_RED, width=2.5, dash="dash"),
+    )
+    fig.update_layout(
+        title=f"Residual QQ · {model_name}",
+        xaxis_title="Theoretical normal quantiles",
+        yaxis_title="Observed residual quantiles",
+    )
     return _style(fig)
 
 
@@ -128,7 +153,14 @@ def predict_basket_price(
 
 
 def _style(fig: go.Figure) -> go.Figure:
-    fig.update_layout(template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)",
-                      plot_bgcolor="rgba(0,0,0,0)", font=dict(color="#F9FAFB"),
-                      margin=dict(l=20, r=20, t=50, b=30), height=380)
+    fig.update_layout(
+        template="plotly_white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color=TEXT, family="Plus Jakarta Sans, sans-serif"),
+        margin=dict(l=25, r=25, t=50, b=30),
+        height=380,
+    )
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
+    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
     return fig

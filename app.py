@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from src.config import (
-    ACCENT_AMBER, ACCENT_CYAN, ACCENT_GREEN, ACCENT_ROSE,
+    ACCENT_AMBER, ACCENT_ORANGE, ACCENT_RED, ACCENT_YELLOW,
     CATEGORIES, SIZES,
 )
 from src.analytics import category_waterfall, executive_kpis, hourly_sales_heatmap, pareto_chart
@@ -95,11 +95,11 @@ def render_overview(frame: pd.DataFrame) -> None:
         return
     kpis = executive_kpis(frame)
     cards = [
-        ("Gross Revenue", f"${kpis['Gross Revenue']:,.2f}", ACCENT_GREEN),
-        ("Pizzas Sold", f"{kpis['Total Pizzas Sold']:,}", ACCENT_CYAN),
+        ("Gross Revenue", f"${kpis['Gross Revenue']:,.2f}", ACCENT_RED),
+        ("Pizzas Sold", f"{kpis['Total Pizzas Sold']:,}", ACCENT_ORANGE),
         ("Unique Orders", f"{kpis['Total Unique Orders']:,}", ACCENT_AMBER),
-        ("Average Order Value", f"${kpis['Average Order Value']:,.2f}", ACCENT_ROSE),
-        ("Average Margin", f"{kpis['Average Margin %']:.1f}%", ACCENT_GREEN),
+        ("Average Order Value", f"${kpis['Average Order Value']:,.2f}", ACCENT_YELLOW),
+        ("Average Margin", f"{kpis['Average Margin %']:.1f}%", ACCENT_RED),
     ]
     st.markdown('<div class="kpi-grid">' + ''.join(metric_card(*card) for card in cards) + '</div>',
                 unsafe_allow_html=True)
@@ -141,12 +141,25 @@ def render_olap(frame: pd.DataFrame, schema: dict[str, pd.DataFrame]) -> None:
                      "margin_pct": st.column_config.NumberColumn("Margin %", format="%.1f%%"),
                  })
     timeline = cube.groupby("period", as_index=False)["revenue"].sum()
-    fig = go.Figure(go.Scatter(x=timeline["period"], y=timeline["revenue"], mode="lines+markers",
-                               line=dict(color=ACCENT_CYAN, width=3), fill="tozeroy",
-                               fillcolor="rgba(6,182,212,.12)"))
-    fig.update_layout(title=f"Revenue drill-down · {grain}", xaxis_title=grain, yaxis_title="Revenue ($)",
-                      template="plotly_dark", paper_bgcolor="rgba(0,0,0,0)",
-                      plot_bgcolor="rgba(0,0,0,0)", height=330)
+    fig = go.Figure(go.Scatter(
+        x=timeline["period"], y=timeline["revenue"], mode="lines+markers",
+        line=dict(color=ACCENT_ORANGE, width=3),
+        marker=dict(size=7, color=ACCENT_RED),
+        fill="tozeroy",
+        fillcolor="rgba(234,88,12,.10)",
+    ))
+    fig.update_layout(
+        title=f"Revenue drill-down · {grain}",
+        xaxis_title=grain,
+        yaxis_title="Revenue ($)",
+        template="plotly_white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#1C1917", family="Plus Jakarta Sans, sans-serif"),
+        height=330,
+    )
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
+    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
     st.plotly_chart(fig, use_container_width=True)
     st.plotly_chart(pareto_chart(frame), use_container_width=True)
     st.caption("A line item is the fact grain. Distinct orders in grouped rows may overlap across dimension groups.")
@@ -250,10 +263,14 @@ def main() -> None:
     source = joined_sales()
     schema = build_star_schema()
     filtered = render_sidebar(source)
+    st.markdown('<div class="hero-badge">🍕 MODERN DATA WAREHOUSE & ANALYTICS</div>', unsafe_allow_html=True)
     st.title("Pizza MDW & Predictive Intelligence")
-    st.caption("Sales decisions, multidimensional analysis, and applied machine learning in one workspace")
+    st.caption("Sales decisions, multidimensional OLAP analysis, and applied machine learning in one workspace")
     tabs = st.tabs([
-        "Executive Overview", "OLAP & Data Warehouse", "Price Regression Lab", "Tree Classification & Mining",
+        "📊 Executive Overview",
+        "🏛️ OLAP & Data Warehouse",
+        "📈 Price Regression Lab",
+        "🌲 Tree Classification & Mining",
     ])
     with tabs[0]:
         render_overview(filtered)

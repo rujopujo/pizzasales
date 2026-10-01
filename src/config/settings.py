@@ -1,13 +1,22 @@
 """Shared display and domain constants for the pizza intelligence app."""
 
-BG = "#0B0F19"
-CARD_BG = "#111827"
-BORDER = "#1F2937"
-TEXT = "#F9FAFB"
-ACCENT_GREEN = "#10B981"
-ACCENT_CYAN = "#06B6D4"
-ACCENT_AMBER = "#F59E0B"
-ACCENT_ROSE = "#F43F5E"
+# Light mode warm pizza palette
+BG = "#FFFBF5"
+CARD_BG = "#FFFFFF"
+BORDER = "#FED7AA"
+TEXT = "#1C1917"
+MUTED_TEXT = "#78716C"
+
+# Core Theme: Red, Orange, Yellow
+ACCENT_RED = "#DC2626"
+ACCENT_ORANGE = "#EA580C"
+ACCENT_YELLOW = "#EAB308"
+ACCENT_AMBER = "#D97706"
+
+# Compatibility aliases mapped to the warm palette
+ACCENT_GREEN = "#D97706"
+ACCENT_CYAN = "#EA580C"
+ACCENT_ROSE = "#DC2626"
 
 CATEGORIES = ["Classic", "Veggie", "Supreme", "Chicken"]
 SIZES = ["S", "M", "L", "XL", "XXL"]
