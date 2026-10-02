@@ -73,11 +73,11 @@ def render_sidebar(source: pd.DataFrame) -> pd.DataFrame:
     sizes = st.sidebar.multiselect("Size", SIZES, key="sizes")
     st.sidebar.markdown("---")
     st.sidebar.markdown("### ⚡ Quick Presets")
-    st.sidebar.button("🗓️ All Time", use_container_width=True, on_click=set_preset,
+    st.sidebar.button("🗓️ All Time", width="stretch", on_click=set_preset,
                       args=("All Time", first_date, last_date))
-    st.sidebar.button("🎉 Weekend Rush", use_container_width=True, on_click=set_preset,
+    st.sidebar.button("🎉 Weekend Rush", width="stretch", on_click=set_preset,
                       args=("Weekend Rush", first_date, last_date))
-    st.sidebar.button("🔥 Peak Hours", use_container_width=True, on_click=set_preset,
+    st.sidebar.button("🔥 Peak Hours", width="stretch", on_click=set_preset,
                       args=("Peak Hours", first_date, last_date))
     preset = st.session_state.preset
     st.sidebar.info(f"Active: **{preset}**")
@@ -113,9 +113,9 @@ def render_overview(frame: pd.DataFrame) -> None:
     st.markdown(section_divider(), unsafe_allow_html=True)
     left, right = st.columns(2)
     with left:
-        st.plotly_chart(category_waterfall(frame), use_container_width=True)
+        st.plotly_chart(category_waterfall(frame), width="stretch")
     with right:
-        st.plotly_chart(hourly_sales_heatmap(frame), use_container_width=True)
+        st.plotly_chart(hourly_sales_heatmap(frame), width="stretch")
     st.caption("Margin is an illustrative 65–75% assumption assigned per sales line.")
 
 
@@ -128,7 +128,7 @@ def render_olap(frame: pd.DataFrame, schema: dict[str, pd.DataFrame]) -> None:
     )
     with st.expander("🔎 Inspect star schema tables"):
         selected_table = st.selectbox("Table", list(schema), key="schema_table")
-        st.dataframe(schema[selected_table].head(100), use_container_width=True, hide_index=True)
+        st.dataframe(schema[selected_table].head(100), width="stretch", hide_index=True)
     if frame.empty:
         st.info("No sales match the current filters.")
         return
@@ -143,7 +143,7 @@ def render_olap(frame: pd.DataFrame, schema: dict[str, pd.DataFrame]) -> None:
             default=["pizza_category"],
         )
     cube = roll_up(frame, grain, dimensions)
-    st.dataframe(cube, use_container_width=True, hide_index=True,
+    st.dataframe(cube, width="stretch", hide_index=True,
                  column_config={
                      "revenue": st.column_config.NumberColumn("Revenue", format="$%.2f"),
                      "gross_profit": st.column_config.NumberColumn("Gross profit", format="$%.2f"),
@@ -169,8 +169,8 @@ def render_olap(frame: pd.DataFrame, schema: dict[str, pd.DataFrame]) -> None:
     )
     fig.update_xaxes(showgrid=True, gridcolor=CHART_GRID)
     fig.update_yaxes(showgrid=True, gridcolor=CHART_GRID)
-    st.plotly_chart(fig, use_container_width=True)
-    st.plotly_chart(pareto_chart(frame), use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
+    st.plotly_chart(pareto_chart(frame), width="stretch")
     st.caption("A line item is the fact grain. Distinct orders in grouped rows may overlap across dimension groups.")
 
 
@@ -190,16 +190,16 @@ def render_regression(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
     st.subheader("📈 Price Regression Lab")
     frame = training_frame(filtered, source, 60)
     result = cached_regression(frame)
-    st.dataframe(result.metrics, use_container_width=True, hide_index=True,
+    st.dataframe(result.metrics, width="stretch", hide_index=True,
                  column_config={name: st.column_config.NumberColumn(format="%.3f")
                                 for name in ["R2", "Adjusted R2", "MAE", "RMSE", "MAPE (%)"]})
     selected = st.selectbox("🔬 Inspect model diagnostics", list(result.models), index=2)
     st.markdown(section_divider(), unsafe_allow_html=True)
     left, right = st.columns(2)
     with left:
-        st.plotly_chart(residual_plot(result, selected), use_container_width=True)
+        st.plotly_chart(residual_plot(result, selected), width="stretch")
     with right:
-        st.plotly_chart(qq_plot(result, selected), use_container_width=True)
+        st.plotly_chart(qq_plot(result, selected), width="stretch")
 
     st.markdown("#### 🧮 Interactive Basket Price Calculator")
     with st.form("basket_calculator"):
@@ -212,7 +212,7 @@ def render_regression(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
         size = c5.selectbox("Size", SIZES, index=1, key="reg_size")
         category = c6.selectbox("Category", CATEGORIES, key="reg_category")
         hour = c7.slider("Order hour", 10, 23, 19, key="reg_hour")
-        submitted = st.form_submit_button("🍕 Calculate basket price", use_container_width=True)
+        submitted = st.form_submit_button("🍕 Calculate basket price", width="stretch")
     if submitted:
         prediction = predict_basket_price(result.models[selected], quantity, base_price, uplift,
                                           surge, size, category, hour)
@@ -228,8 +228,8 @@ def render_classification(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
     frame = training_frame(filtered, source, 60, needs_tiers=True)
     st.caption("Tiers: Budget < \\$20 · Standard \\$20–\\$50 · Premium > \\$50")
     score = cached_relevance(frame)
-    st.plotly_chart(relevance_chart(score), use_container_width=True)
-    st.dataframe(score, use_container_width=True, hide_index=True)
+    st.plotly_chart(relevance_chart(score), width="stretch")
+    st.dataframe(score, width="stretch", hide_index=True)
     st.markdown(section_divider(), unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     depth = c1.slider("Maximum tree depth", 2, 15, 5)
@@ -238,11 +238,11 @@ def render_classification(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
     result = cached_tree(frame, depth, split, criterion)
     left, right = st.columns(2)
     with left:
-        st.plotly_chart(confusion_chart(result), use_container_width=True)
+        st.plotly_chart(confusion_chart(result), width="stretch")
     with right:
-        st.plotly_chart(roc_chart(result), use_container_width=True)
+        st.plotly_chart(roc_chart(result), width="stretch")
     st.markdown("#### 📋 Classification Report")
-    st.dataframe(result.report, use_container_width=True, hide_index=True,
+    st.dataframe(result.report, width="stretch", hide_index=True,
                  column_config={name: st.column_config.NumberColumn(format="%.3f")
                                 for name in ["Precision", "Recall", "F1"]})
 
@@ -255,7 +255,7 @@ def render_classification(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
         d, e = st.columns(2)
         size = d.selectbox("Size", SIZES, index=1, key="tier_size")
         category = e.selectbox("Category", CATEGORIES, key="tier_category")
-        submitted = st.form_submit_button("🔮 Classify order", use_container_width=True)
+        submitted = st.form_submit_button("🔮 Classify order", width="stretch")
     if submitted:
         prediction = classify_order(result.model, quantity, unit_price, hour, size, category)
         st.success(f"Predicted tier: **{prediction['tier']}** · Basket total: ${prediction['basket_total']:,.2f}")
@@ -263,7 +263,7 @@ def render_classification(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
             "Tier": list(prediction["probabilities"]),
             "Probability": [value * 100 for value in prediction["probabilities"].values()],
         })
-        st.dataframe(probability_frame, use_container_width=True, hide_index=True,
+        st.dataframe(probability_frame, width="stretch", hide_index=True,
                      column_config={"Probability": st.column_config.ProgressColumn(
                          "Class probability", min_value=0, max_value=100, format="%.1f%%"
                      )})

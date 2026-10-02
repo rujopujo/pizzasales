@@ -89,7 +89,7 @@ def hourly_sales_heatmap(frame: pd.DataFrame) -> go.Figure:
         x=hours,
         y=DAY_ORDER,
         colorscale=PIZZA_COLORSCALE,
-        colorbar=dict(title="Revenue ($)", tickfont=dict(color=MUTED_TEXT), titlefont=dict(color=TEXT)),
+        colorbar=dict(title="Revenue ($)", tickfont=dict(color=MUTED_TEXT), title_font=dict(color=TEXT)),
         hovertemplate="%{y}, %{x}:00<br>$%{z:,.2f}<extra></extra>",
     ))
     fig.update_layout(title="Revenue by weekday and hour", xaxis_title="Hour of day", yaxis_title="Day of week")

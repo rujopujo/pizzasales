@@ -118,8 +118,7 @@ def residual_plot(result: RegressionResult, model_name: str) -> go.Figure:
 
 def qq_plot(result: RegressionResult, model_name: str) -> go.Figure:
     residuals = result.y_test - result.predictions[model_name]
-    theoretical, ordered = stats.probplot(residuals, dist="norm", fit=False)
-    slope, intercept, _ = stats.probplot(residuals, dist="norm", fit=True)[1]
+    (theoretical, ordered), (slope, intercept, _) = stats.probplot(residuals, dist="norm", fit=True)
     fig = go.Figure()
     fig.add_scatter(
         x=theoretical,

@@ -187,7 +187,7 @@ def confusion_chart(result: ClassificationResult) -> go.Figure:
         texttemplate="%{text:.2f}",
         textfont=dict(color=TEXT),
         hovertemplate="Actual %{y}<br>Predicted %{x}<br>%{z:.1%}<extra></extra>",
-        colorbar=dict(title="Row share", tickfont=dict(color=MUTED_TEXT), titlefont=dict(color=TEXT)),
+        colorbar=dict(title="Row share", tickfont=dict(color=MUTED_TEXT), title_font=dict(color=TEXT)),
     ))
     fig.update_layout(title="Normalized confusion matrix", xaxis_title="Predicted tier", yaxis_title="Actual tier")
     fig.update_yaxes(autorange="reversed")
