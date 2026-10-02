@@ -1,22 +1,26 @@
-"""Shared display and domain constants for the pizza intelligence app."""
+"""Shared display and domain constants for the pizza intelligence app.
 
-# Light mode warm pizza palette
-BG = "#FFFBF5"
-CARD_BG = "#FFFFFF"
-BORDER = "#FED7AA"
-TEXT = "#1C1917"
-MUTED_TEXT = "#78716C"
+Warm pizzeria palette: brick oven darks, tomato reds, mozzarella creams,
+basil greens, and golden crust ambers.
+"""
 
-# Core Theme: Red, Orange, Yellow
-ACCENT_RED = "#DC2626"
-ACCENT_ORANGE = "#EA580C"
-ACCENT_YELLOW = "#EAB308"
-ACCENT_AMBER = "#D97706"
+# --- Deep Pizzeria Palette ---
+BG = "#1A0F0A"                  # Dark walnut / brick oven interior
+CARD_BG = "rgba(42, 28, 18, 0.85)"  # Smoky card glass
+BORDER = "rgba(212, 136, 46, 0.25)"  # Warm crust glow border
+TEXT = "#FFF5E6"                # Mozzarella cream text
+MUTED_TEXT = "#C4A882"          # Aged parmesan muted
 
-# Compatibility aliases mapped to the warm palette
-ACCENT_GREEN = "#D97706"
-ACCENT_CYAN = "#EA580C"
-ACCENT_ROSE = "#DC2626"
+# Core accent colors — the pizza ingredient palette
+ACCENT_RED = "#E63946"          # Tomato sauce / pepperoni red
+ACCENT_ORANGE = "#F77F00"       # Brick oven flame orange
+ACCENT_YELLOW = "#FCBF49"      # Golden crust / melted cheese
+ACCENT_AMBER = "#D4882E"       # Baked cheese / crust amber
+
+# Extended palette
+ACCENT_GREEN = "#4A9E5C"       # Fresh basil green
+ACCENT_CYAN = "#5EAAA8"        # Mediterranean olive teal
+ACCENT_ROSE = "#C1446A"        # Sun-dried tomato rose
 
 CATEGORIES = ["Classic", "Veggie", "Supreme", "Chicken"]
 SIZES = ["S", "M", "L", "XL", "XXL"]
@@ -28,3 +32,18 @@ PIZZA_NAMES = {
     "Supreme": ["The Works", "Deluxe Supreme", "Firehouse", "BBQ Supreme"],
     "Chicken": ["BBQ Chicken", "Buffalo Chicken", "Chicken Pesto", "Tandoori Chicken"],
 }
+
+# Plotly chart template settings
+CHART_FONT = "Plus Jakarta Sans, sans-serif"
+CHART_GRID = "rgba(255, 245, 230, 0.08)"
+CHART_PAPER_BG = "rgba(0,0,0,0)"
+CHART_PLOT_BG = "rgba(0,0,0,0)"
+
+# Pizza-themed colorscale for heatmaps (cream → gold → orange → red → dark)
+PIZZA_COLORSCALE = [
+    [0.0, "#FFF5E6"],
+    [0.25, "#FCBF49"],
+    [0.5, "#F77F00"],
+    [0.75, "#E63946"],
+    [1.0, "#7A1F2E"],
+]

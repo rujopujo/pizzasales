@@ -1,4 +1,4 @@
-"""Reusable Streamlit presentation elements in warm pizza light mode."""
+"""Reusable Streamlit presentation elements in immersive pizzeria dark theme."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import streamlit as st
 
 from src.config.settings import (
     ACCENT_AMBER,
+    ACCENT_GREEN,
     ACCENT_ORANGE,
     ACCENT_RED,
     ACCENT_YELLOW,
@@ -23,18 +24,20 @@ def inject_css() -> None:
     st.markdown(f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&display=swap');
 
     html, body, [class*="css"] {{
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     }}
 
-    /* Light Mode Background with subtle warm gradient mesh */
+    /* ── Dark Brick Oven Background with Warm Glow ── */
     .stApp {{
         background-color: {BG};
-        background-image: 
-            radial-gradient(circle at 5% 0%, rgba(254, 215, 170, 0.35) 0%, transparent 40%),
-            radial-gradient(circle at 95% 0%, rgba(254, 202, 202, 0.30) 0%, transparent 40%),
-            radial-gradient(circle at 50% 100%, rgba(254, 240, 138, 0.15) 0%, transparent 50%);
+        background-image:
+            radial-gradient(ellipse at 10% 0%, rgba(231, 57, 70, 0.12) 0%, transparent 50%),
+            radial-gradient(ellipse at 90% 0%, rgba(247, 127, 0, 0.10) 0%, transparent 45%),
+            radial-gradient(ellipse at 50% 100%, rgba(252, 191, 73, 0.06) 0%, transparent 55%),
+            radial-gradient(circle at 50% 50%, rgba(42, 28, 18, 0.4) 0%, transparent 70%);
         color: {TEXT};
     }}
 
@@ -44,37 +47,47 @@ def inject_css() -> None:
         max-width: 1550px;
     }}
 
-    /* Sidebar Styling - Warm Soft Cream */
+    /* ── Sidebar — Dark Wood Panel ── */
     section[data-testid="stSidebar"] {{
-        background: linear-gradient(180deg, #FFF7ED 0%, #FFEDD5 100%);
-        border-right: 1px solid rgba(234, 88, 12, 0.15);
-        box-shadow: 2px 0 16px rgba(234, 88, 12, 0.04);
+        background: linear-gradient(180deg, #211410 0%, #1A0F0A 40%, #2A1C12 100%);
+        border-right: 1px solid {BORDER};
+        box-shadow: 3px 0 24px rgba(0, 0, 0, 0.4);
     }}
     section[data-testid="stSidebar"] .block-container {{
         padding-top: 1.5rem;
     }}
-    section[data-testid="stSidebar"] h1, 
-    section[data-testid="stSidebar"] h2, 
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {{
-        color: #9A3412;
+        color: {ACCENT_YELLOW};
         font-weight: 700;
     }}
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] label,
+    section[data-testid="stSidebar"] span {{
+        color: {MUTED_TEXT};
+    }}
 
-    /* Headings with Vibrant Pizza Gradient (Red to Orange to Amber) */
+    /* ── Headings — Fiery Gradient ── */
     h1 {{
-        background: linear-gradient(135deg, {ACCENT_RED} 0%, {ACCENT_ORANGE} 50%, {ACCENT_AMBER} 100%);
+        font-family: 'Playfair Display', 'Georgia', serif;
+        background: linear-gradient(135deg, {ACCENT_YELLOW} 0%, {ACCENT_ORANGE} 40%, {ACCENT_RED} 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        font-weight: 800;
-        letter-spacing: -0.025em;
+        font-weight: 900;
+        letter-spacing: -0.03em;
     }}
-    h2, h3, h4 {{
-        color: #7C2D12;
+    h2, h3 {{
+        color: {ACCENT_YELLOW};
         font-weight: 700;
         letter-spacing: -0.015em;
     }}
+    h4 {{
+        color: {ACCENT_ORANGE};
+        font-weight: 600;
+    }}
 
-    /* Metric Cards Grid */
+    /* ── KPI Metric Grid ── */
     .kpi-grid {{
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -82,33 +95,56 @@ def inject_css() -> None:
         margin: 0.8rem 0 1.5rem;
     }}
 
-    /* Porcelain KPI Card with Warm Border & Smooth Hover Lift */
+    /* ── Glassmorphic KPI Card ── */
     .porcelain-card {{
         background: {CARD_BG};
-        border: 1px solid rgba(234, 88, 12, 0.18);
-        border-radius: 14px;
-        padding: 1.15rem 1.25rem;
-        box-shadow: 0 4px 18px -2px rgba(234, 88, 12, 0.07), 0 1px 3px rgba(0, 0, 0, 0.03);
-        transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid {BORDER};
+        border-radius: 16px;
+        padding: 1.2rem 1.3rem;
+        box-shadow:
+            0 4px 24px -4px rgba(0, 0, 0, 0.35),
+            0 0 0 1px rgba(212, 136, 46, 0.05),
+            inset 0 1px 0 rgba(255, 245, 230, 0.04);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                    box-shadow 0.25s ease,
+                    border-color 0.25s ease;
         position: relative;
         overflow: hidden;
     }}
+    .porcelain-card::before {{
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, {ACCENT_RED}, {ACCENT_ORANGE}, {ACCENT_YELLOW});
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }}
     .porcelain-card:hover {{
-        transform: translateY(-3px);
-        box-shadow: 0 12px 28px -4px rgba(234, 88, 12, 0.14), 0 4px 8px rgba(0, 0, 0, 0.04);
-        border-color: rgba(234, 88, 12, 0.40);
+        transform: translateY(-4px);
+        box-shadow:
+            0 16px 40px -8px rgba(247, 127, 0, 0.18),
+            0 8px 16px rgba(0, 0, 0, 0.25);
+        border-color: rgba(247, 127, 0, 0.45);
+    }}
+    .porcelain-card:hover::before {{
+        opacity: 1;
     }}
 
     .kpi-label {{
         color: {MUTED_TEXT};
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.06em;
         line-height: 1.3;
     }}
     .kpi-value {{
-        color: #1C1917;
+        color: {TEXT};
         font-size: clamp(1.5rem, 2.2vw, 2.05rem);
         font-weight: 800;
         margin-top: 0.35rem;
@@ -122,101 +158,191 @@ def inject_css() -> None:
         border-radius: 4px;
         margin-top: 0.85rem;
     }}
+    .kpi-icon {{
+        font-size: 1.6rem;
+        margin-bottom: 0.3rem;
+    }}
 
-    /* Streamlit Tabs - Pill Design with Radiant Active Orange */
+    /* ── Tabs — Ember Pill Design ── */
     div[data-baseweb="tab-list"] {{
-        background: rgba(254, 215, 170, 0.35);
-        padding: 0.35rem;
-        border-radius: 12px;
+        background: rgba(42, 28, 18, 0.65);
+        backdrop-filter: blur(12px);
+        padding: 0.4rem;
+        border-radius: 14px;
         gap: 0.35rem;
-        border: 1px solid rgba(234, 88, 12, 0.12);
+        border: 1px solid {BORDER};
         margin-bottom: 1.2rem;
     }}
     button[data-baseweb="tab"] {{
-        border-radius: 9px;
-        padding: 0.55rem 1.15rem;
+        border-radius: 10px;
+        padding: 0.6rem 1.2rem;
         font-weight: 600;
         font-size: 0.92rem;
-        color: #78716C !important;
+        color: {MUTED_TEXT} !important;
         border: none !important;
         background: transparent !important;
         transition: all 0.2s ease;
     }}
     button[data-baseweb="tab"]:hover {{
-        color: #9A3412 !important;
-        background: rgba(255, 255, 255, 0.6) !important;
+        color: {ACCENT_YELLOW} !important;
+        background: rgba(252, 191, 73, 0.1) !important;
     }}
     button[data-baseweb="tab"][aria-selected="true"] {{
         background: linear-gradient(135deg, {ACCENT_ORANGE} 0%, {ACCENT_RED} 100%) !important;
         color: #FFFFFF !important;
-        box-shadow: 0 4px 14px rgba(234, 88, 12, 0.30);
+        box-shadow: 0 4px 18px rgba(247, 127, 0, 0.35), 0 0 0 1px rgba(247, 127, 0, 0.2);
     }}
     div[data-baseweb="tab-highlight"] {{
         display: none !important;
     }}
 
-    /* Streamlit Buttons - Warm Red/Orange Gradient */
+    /* ── Buttons — Oven Flame Gradient ── */
     div.stButton > button {{
         background: linear-gradient(135deg, {ACCENT_ORANGE} 0%, {ACCENT_RED} 100%);
         color: #FFFFFF !important;
         font-weight: 600;
-        border-radius: 10px;
+        border-radius: 11px;
         border: none;
-        padding: 0.55rem 1.25rem;
-        box-shadow: 0 3px 12px rgba(234, 88, 12, 0.22);
+        padding: 0.6rem 1.3rem;
+        box-shadow: 0 4px 16px rgba(247, 127, 0, 0.25);
         transition: all 0.2s ease;
     }}
     div.stButton > button:hover {{
-        background: linear-gradient(135deg, #F97316 0%, #EF4444 100%);
-        box-shadow: 0 6px 18px rgba(234, 88, 12, 0.35);
-        transform: translateY(-1px);
+        background: linear-gradient(135deg, #FF8C1A 0%, #FF4757 100%);
+        box-shadow: 0 8px 24px rgba(247, 127, 0, 0.40);
+        transform: translateY(-2px);
         color: #FFFFFF !important;
     }}
 
-    /* Dataframes & Expanders */
+    /* ── Form Submit Button ── */
+    button[kind="primaryFormSubmit"] {{
+        background: linear-gradient(135deg, {ACCENT_ORANGE} 0%, {ACCENT_RED} 100%) !important;
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        border-radius: 11px !important;
+        border: none !important;
+        box-shadow: 0 4px 16px rgba(247, 127, 0, 0.25) !important;
+    }}
+
+    /* ── Dataframes & Expanders — Dark Glass ── */
     div[data-testid="stDataFrame"] {{
-        background: #FFFFFF;
-        border: 1px solid rgba(234, 88, 12, 0.18);
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        background: rgba(42, 28, 18, 0.6);
+        border: 1px solid {BORDER};
+        border-radius: 14px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     }}
     div[data-testid="stExpander"] {{
-        background: #FFFFFF;
-        border: 1px solid rgba(234, 88, 12, 0.18);
-        border-radius: 12px;
+        background: rgba(42, 28, 18, 0.5);
+        border: 1px solid {BORDER};
+        border-radius: 14px;
+    }}
+    div[data-testid="stExpander"] summary {{
+        color: {ACCENT_YELLOW};
+        font-weight: 600;
     }}
 
-    /* Inputs, Selectboxes, Number Inputs */
+    /* ── Inputs, Selects, Number Inputs ── */
     div[data-baseweb="select"] > div {{
-        background: #FFFFFF;
-        border-color: rgba(234, 88, 12, 0.25);
-        border-radius: 9px;
+        background: rgba(42, 28, 18, 0.7) !important;
+        border-color: {BORDER} !important;
+        border-radius: 10px;
+        color: {TEXT};
     }}
     div[data-baseweb="input"] {{
-        background: #FFFFFF;
-        border-color: rgba(234, 88, 12, 0.25);
-        border-radius: 9px;
+        background: rgba(42, 28, 18, 0.7) !important;
+        border-color: {BORDER} !important;
+        border-radius: 10px;
+    }}
+    div[data-baseweb="input"] input {{
+        color: {TEXT} !important;
     }}
 
-    /* Sliders Accent */
+    /* ── Sliders ── */
     div[data-testid="stSlider"] {{
         color: {ACCENT_ORANGE};
     }}
 
-    /* Hero Banner Badge */
+    /* ── Hero Banner Badge ── */
     .hero-badge {{
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
-        background: linear-gradient(135deg, #FEF3C7 0%, #FEE2E2 100%);
-        color: #9A3412;
-        padding: 0.28rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
+        gap: 0.45rem;
+        background: linear-gradient(135deg, rgba(230, 57, 70, 0.18) 0%, rgba(247, 127, 0, 0.15) 50%, rgba(252, 191, 73, 0.12) 100%);
+        color: {ACCENT_YELLOW};
+        padding: 0.3rem 0.85rem;
+        border-radius: 24px;
+        font-size: 0.78rem;
         font-weight: 700;
-        letter-spacing: 0.03em;
-        border: 1px solid rgba(234, 88, 12, 0.20);
+        letter-spacing: 0.05em;
+        border: 1px solid rgba(252, 191, 73, 0.25);
         margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }}
+
+    /* ── Section Divider ── */
+    .pizza-divider {{
+        text-align: center;
+        margin: 1.5rem 0 1rem;
+        color: {MUTED_TEXT};
+        font-size: 1.2rem;
+        letter-spacing: 0.5em;
+        opacity: 0.5;
+    }}
+
+    /* ── Info, Warning, Success boxes ── */
+    div[data-testid="stAlert"] {{
+        border-radius: 12px;
+    }}
+
+    /* ── Streamlit metric overrides ── */
+    div[data-testid="stMetric"] {{
+        background: {CARD_BG};
+        backdrop-filter: blur(12px);
+        border: 1px solid {BORDER};
+        border-radius: 14px;
+        padding: 1rem;
+    }}
+    div[data-testid="stMetric"] label {{
+        color: {MUTED_TEXT} !important;
+    }}
+    [data-testid="stMetricValue"] {{
+        color: {TEXT} !important;
+    }}
+
+    /* ── Plotly chart container ── */
+    div[data-testid="stPlotlyChart"] {{
+        border-radius: 14px;
+        overflow: hidden;
+    }}
+
+    /* ── Caption text ── */
+    .stCaption, div[data-testid="stCaptionContainer"] {{
+        color: {MUTED_TEXT} !important;
+        opacity: 0.85;
+    }}
+
+    /* ── Forms ── */
+    div[data-testid="stForm"] {{
+        background: rgba(42, 28, 18, 0.45);
+        border: 1px solid {BORDER};
+        border-radius: 14px;
+        padding: 1rem;
+    }}
+
+    /* ── Scrollbar styling ── */
+    ::-webkit-scrollbar {{
+        width: 8px;
+        height: 8px;
+    }}
+    ::-webkit-scrollbar-track {{
+        background: rgba(26, 15, 10, 0.5);
+    }}
+    ::-webkit-scrollbar-thumb {{
+        background: rgba(212, 136, 46, 0.35);
+        border-radius: 4px;
+    }}
+    ::-webkit-scrollbar-thumb:hover {{
+        background: rgba(247, 127, 0, 0.5);
     }}
 
     @media (max-width: 600px) {{
@@ -228,11 +354,17 @@ def inject_css() -> None:
     """, unsafe_allow_html=True)
 
 
-def metric_card(label: str, value: str, accent: str = ACCENT_ORANGE) -> str:
+def metric_card(label: str, value: str, accent: str = ACCENT_ORANGE, icon: str = "") -> str:
+    icon_html = f'<div class="kpi-icon">{icon}</div>' if icon else ''
     return (
         '<div class="porcelain-card">'
+        f'{icon_html}'
         f'<div class="kpi-label">{escape(label)}</div>'
         f'<div class="kpi-value">{escape(value)}</div>'
-        f'<div class="kpi-accent-pill" style="background:{escape(accent)};"></div>'
+        f'<div class="kpi-accent-pill" style="background:linear-gradient(90deg, {escape(accent)}, {escape(ACCENT_YELLOW)});"></div>'
         '</div>'
     )
+
+
+def section_divider() -> str:
+    return '<div class="pizza-divider">🍕 · 🍕 · 🍕</div>'
