@@ -1,4 +1,4 @@
-"""Price regression models, diagnostics, and basket inference in warm pizza light mode."""
+"""Price regression models, diagnostics, and basket inference in pizzeria dark theme."""
 
 from __future__ import annotations
 
@@ -18,10 +18,16 @@ from sklearn.preprocessing import OneHotEncoder
 
 from src.config.settings import (
     ACCENT_AMBER,
+    ACCENT_GREEN,
     ACCENT_ORANGE,
     ACCENT_RED,
     ACCENT_YELLOW,
     CATEGORIES,
+    CHART_FONT,
+    CHART_GRID,
+    CHART_PAPER_BG,
+    CHART_PLOT_BG,
+    MUTED_TEXT,
     SIZES,
     TEXT,
 )
@@ -96,11 +102,16 @@ def residual_plot(result: RegressionResult, model_name: str) -> go.Figure:
         x=fitted,
         y=residuals,
         mode="markers",
-        marker=dict(color=ACCENT_ORANGE, opacity=0.75, size=8, line=dict(width=1, color=ACCENT_RED)),
+        marker=dict(
+            color=ACCENT_ORANGE,
+            opacity=0.8,
+            size=8,
+            line=dict(width=1, color=ACCENT_RED),
+        ),
         customdata=result.y_test,
         hovertemplate="Fitted $%{x:.2f}<br>Residual $%{y:.2f}<br>Actual $%{customdata:.2f}<extra></extra>",
     ))
-    fig.add_hline(y=0, line_color=ACCENT_RED, line_dash="dash", line_width=2)
+    fig.add_hline(y=0, line_color=ACCENT_YELLOW, line_dash="dash", line_width=2)
     fig.update_layout(title=f"Residuals · {model_name}", xaxis_title="Fitted price ($)", yaxis_title="Residual ($)")
     return _style(fig)
 
@@ -154,13 +165,19 @@ def predict_basket_price(
 
 def _style(fig: go.Figure) -> go.Figure:
     fig.update_layout(
-        template="plotly_white",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=TEXT, family="Plus Jakarta Sans, sans-serif"),
+        template="plotly_dark",
+        paper_bgcolor=CHART_PAPER_BG,
+        plot_bgcolor=CHART_PLOT_BG,
+        font=dict(color=TEXT, family=CHART_FONT),
         margin=dict(l=25, r=25, t=50, b=30),
         height=380,
+        legend=dict(
+            bgcolor="rgba(42, 28, 18, 0.6)",
+            bordercolor="rgba(212, 136, 46, 0.2)",
+            borderwidth=1,
+            font=dict(color=TEXT),
+        ),
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
-    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
+    fig.update_xaxes(showgrid=True, gridcolor=CHART_GRID, zeroline=False)
+    fig.update_yaxes(showgrid=True, gridcolor=CHART_GRID, zeroline=False)
     return fig

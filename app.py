@@ -7,8 +7,9 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from src.config import (
-    ACCENT_AMBER, ACCENT_ORANGE, ACCENT_RED, ACCENT_YELLOW,
-    CATEGORIES, SIZES,
+    ACCENT_AMBER, ACCENT_GREEN, ACCENT_ORANGE, ACCENT_RED, ACCENT_YELLOW,
+    CATEGORIES, CHART_FONT, CHART_GRID, SIZES,
+    TEXT,
 )
 from src.analytics import category_waterfall, executive_kpis, hourly_sales_heatmap, pareto_chart
 from src.mining import (
@@ -16,7 +17,7 @@ from src.mining import (
     relevance_chart, roc_chart, train_decision_tree,
     predict_basket_price, qq_plot, residual_plot, train_regressors,
 )
-from src.ui import inject_css, metric_card
+from src.ui import inject_css, metric_card, section_divider
 from src.warehouse import build_star_schema, joined_sales, roll_up, slice_dice
 
 st.set_page_config(
@@ -26,17 +27,17 @@ st.set_page_config(
 inject_css()
 
 
-@st.cache_data(show_spinner="Training regression models…")
+@st.cache_data(show_spinner="🔥 Training regression models…")
 def cached_regression(frame: pd.DataFrame):
     return train_regressors(frame)
 
 
-@st.cache_data(show_spinner="Training decision tree…")
+@st.cache_data(show_spinner="🌲 Training decision tree…")
 def cached_tree(frame: pd.DataFrame, depth: int, split: int, criterion: str):
     return train_decision_tree(frame, depth, split, criterion)
 
 
-@st.cache_data(show_spinner="Ranking features…")
+@st.cache_data(show_spinner="🔍 Ranking features…")
 def cached_relevance(frame: pd.DataFrame):
     return attribute_relevance(frame)
 
@@ -60,24 +61,26 @@ def render_sidebar(source: pd.DataFrame) -> pd.DataFrame:
     if "preset" not in st.session_state:
         st.session_state.preset = "All Time"
 
-    st.sidebar.title("🍕 Pizza MDW")
+    st.sidebar.markdown("# 🍕 Pizza MDW")
     st.sidebar.caption("2025 sales intelligence workspace")
-    st.sidebar.subheader("Slice the warehouse")
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 🔪 Slice the Warehouse")
     date_range = st.sidebar.date_input(
         "Order date", min_value=first_date, max_value=last_date,
         key="date_range", format="YYYY-MM-DD",
     )
     categories = st.sidebar.multiselect("Category", CATEGORIES, key="categories")
     sizes = st.sidebar.multiselect("Size", SIZES, key="sizes")
-    st.sidebar.caption("Quick presets")
-    st.sidebar.button("All Time", use_container_width=True, on_click=set_preset,
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### ⚡ Quick Presets")
+    st.sidebar.button("🗓️ All Time", use_container_width=True, on_click=set_preset,
                       args=("All Time", first_date, last_date))
-    st.sidebar.button("Weekend Rush", use_container_width=True, on_click=set_preset,
+    st.sidebar.button("🎉 Weekend Rush", use_container_width=True, on_click=set_preset,
                       args=("Weekend Rush", first_date, last_date))
-    st.sidebar.button("Peak Hours", use_container_width=True, on_click=set_preset,
+    st.sidebar.button("🔥 Peak Hours", use_container_width=True, on_click=set_preset,
                       args=("Peak Hours", first_date, last_date))
     preset = st.session_state.preset
-    st.sidebar.info(f"Preset: {preset}")
+    st.sidebar.info(f"Active: **{preset}**")
     if not isinstance(date_range, (tuple, list)) or len(date_range) != 2:
         st.sidebar.warning("Select both a start and end date.")
         return source.iloc[0:0].copy()
@@ -89,20 +92,25 @@ def render_sidebar(source: pd.DataFrame) -> pd.DataFrame:
 
 
 def render_overview(frame: pd.DataFrame) -> None:
-    st.subheader("Executive Overview")
+    st.subheader("📊 Executive Overview")
     if frame.empty:
         st.info("No sales match the current filters. Broaden the date or pizza selection.")
         return
     kpis = executive_kpis(frame)
     cards = [
-        ("Gross Revenue", f"${kpis['Gross Revenue']:,.2f}", ACCENT_RED),
-        ("Pizzas Sold", f"{kpis['Total Pizzas Sold']:,}", ACCENT_ORANGE),
-        ("Unique Orders", f"{kpis['Total Unique Orders']:,}", ACCENT_AMBER),
-        ("Average Order Value", f"${kpis['Average Order Value']:,.2f}", ACCENT_YELLOW),
-        ("Average Margin", f"{kpis['Average Margin %']:.1f}%", ACCENT_RED),
+        ("Gross Revenue", f"${kpis['Gross Revenue']:,.2f}", ACCENT_RED, "💰"),
+        ("Pizzas Sold", f"{kpis['Total Pizzas Sold']:,}", ACCENT_ORANGE, "🍕"),
+        ("Unique Orders", f"{kpis['Total Unique Orders']:,}", ACCENT_AMBER, "📋"),
+        ("Average Order Value", f"${kpis['Average Order Value']:,.2f}", ACCENT_YELLOW, "🧾"),
+        ("Average Margin", f"{kpis['Average Margin %']:.1f}%", ACCENT_GREEN, "📈"),
     ]
-    st.markdown('<div class="kpi-grid">' + ''.join(metric_card(*card) for card in cards) + '</div>',
-                unsafe_allow_html=True)
+    st.markdown(
+        '<div class="kpi-grid">'
+        + ''.join(metric_card(label, value, accent, icon) for label, value, accent, icon in cards)
+        + '</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(section_divider(), unsafe_allow_html=True)
     left, right = st.columns(2)
     with left:
         st.plotly_chart(category_waterfall(frame), use_container_width=True)
@@ -112,24 +120,25 @@ def render_overview(frame: pd.DataFrame) -> None:
 
 
 def render_olap(frame: pd.DataFrame, schema: dict[str, pd.DataFrame]) -> None:
-    st.subheader("OLAP & Data Warehouse")
+    st.subheader("🏛️ OLAP & Data Warehouse")
     facts = len(schema["Fact_Sales"])
     st.caption(
         f"Star schema · {facts:,} fact rows · {len(schema['Dim_Pizza'])} pizzas · "
         f"{len(schema['Dim_Time'])} times · {len(schema['Dim_Date'])} dates"
     )
-    with st.expander("Inspect star schema tables"):
+    with st.expander("🔎 Inspect star schema tables"):
         selected_table = st.selectbox("Table", list(schema), key="schema_table")
         st.dataframe(schema[selected_table].head(100), use_container_width=True, hide_index=True)
     if frame.empty:
         st.info("No sales match the current filters.")
         return
+    st.markdown(section_divider(), unsafe_allow_html=True)
     col_grain, col_dimensions = st.columns([1, 2])
     with col_grain:
-        grain = st.selectbox("Time hierarchy", ["Day", "Week", "Month", "Quarter"])
+        grain = st.selectbox("⏱️ Time hierarchy", ["Day", "Week", "Month", "Quarter"])
     with col_dimensions:
         dimensions = st.multiselect(
-            "Slice/dice dimensions",
+            "🎯 Slice/dice dimensions",
             ["pizza_category", "pizza_size", "pizza_name", "peak_period", "day_of_week"],
             default=["pizza_category"],
         )
@@ -144,22 +153,22 @@ def render_olap(frame: pd.DataFrame, schema: dict[str, pd.DataFrame]) -> None:
     fig = go.Figure(go.Scatter(
         x=timeline["period"], y=timeline["revenue"], mode="lines+markers",
         line=dict(color=ACCENT_ORANGE, width=3),
-        marker=dict(size=7, color=ACCENT_RED),
+        marker=dict(size=7, color=ACCENT_RED, line=dict(color=ACCENT_YELLOW, width=1.5)),
         fill="tozeroy",
-        fillcolor="rgba(234,88,12,.10)",
+        fillcolor="rgba(247, 127, 0, 0.08)",
     ))
     fig.update_layout(
         title=f"Revenue drill-down · {grain}",
         xaxis_title=grain,
         yaxis_title="Revenue ($)",
-        template="plotly_white",
+        template="plotly_dark",
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#1C1917", family="Plus Jakarta Sans, sans-serif"),
+        font=dict(color=TEXT, family=CHART_FONT),
         height=330,
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
-    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
+    fig.update_xaxes(showgrid=True, gridcolor=CHART_GRID)
+    fig.update_yaxes(showgrid=True, gridcolor=CHART_GRID)
     st.plotly_chart(fig, use_container_width=True)
     st.plotly_chart(pareto_chart(frame), use_container_width=True)
     st.caption("A line item is the fact grain. Distinct orders in grouped rows may overlap across dimension groups.")
@@ -178,20 +187,21 @@ def training_frame(filtered: pd.DataFrame, source: pd.DataFrame, minimum: int, n
 
 
 def render_regression(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
-    st.subheader("Price Regression Lab")
+    st.subheader("📈 Price Regression Lab")
     frame = training_frame(filtered, source, 60)
     result = cached_regression(frame)
     st.dataframe(result.metrics, use_container_width=True, hide_index=True,
                  column_config={name: st.column_config.NumberColumn(format="%.3f")
                                 for name in ["R2", "Adjusted R2", "MAE", "RMSE", "MAPE (%)"]})
-    selected = st.selectbox("Inspect model diagnostics", list(result.models), index=2)
+    selected = st.selectbox("🔬 Inspect model diagnostics", list(result.models), index=2)
+    st.markdown(section_divider(), unsafe_allow_html=True)
     left, right = st.columns(2)
     with left:
         st.plotly_chart(residual_plot(result, selected), use_container_width=True)
     with right:
         st.plotly_chart(qq_plot(result, selected), use_container_width=True)
 
-    st.markdown("#### Interactive Basket Price Calculator")
+    st.markdown("#### 🧮 Interactive Basket Price Calculator")
     with st.form("basket_calculator"):
         c1, c2, c3, c4 = st.columns(4)
         quantity = c1.number_input("Quantity", min_value=1, max_value=20, value=2, step=1)
@@ -202,7 +212,7 @@ def render_regression(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
         size = c5.selectbox("Size", SIZES, index=1, key="reg_size")
         category = c6.selectbox("Category", CATEGORIES, key="reg_category")
         hour = c7.slider("Order hour", 10, 23, 19, key="reg_hour")
-        submitted = st.form_submit_button("Calculate basket price", use_container_width=True)
+        submitted = st.form_submit_button("🍕 Calculate basket price", use_container_width=True)
     if submitted:
         prediction = predict_basket_price(result.models[selected], quantity, base_price, uplift,
                                           surge, size, category, hour)
@@ -214,12 +224,13 @@ def render_regression(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
 
 
 def render_classification(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
-    st.subheader("Tree Classification & Mining")
+    st.subheader("🌲 Tree Classification & Mining")
     frame = training_frame(filtered, source, 60, needs_tiers=True)
     st.caption("Tiers: Budget < \\$20 · Standard \\$20–\\$50 · Premium > \\$50")
     score = cached_relevance(frame)
     st.plotly_chart(relevance_chart(score), use_container_width=True)
     st.dataframe(score, use_container_width=True, hide_index=True)
+    st.markdown(section_divider(), unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     depth = c1.slider("Maximum tree depth", 2, 15, 5)
     split = c2.slider("Minimum samples to split", 2, 30, 8)
@@ -230,12 +241,12 @@ def render_classification(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
         st.plotly_chart(confusion_chart(result), use_container_width=True)
     with right:
         st.plotly_chart(roc_chart(result), use_container_width=True)
-    st.markdown("#### Classification report")
+    st.markdown("#### 📋 Classification Report")
     st.dataframe(result.report, use_container_width=True, hide_index=True,
                  column_config={name: st.column_config.NumberColumn(format="%.3f")
                                 for name in ["Precision", "Recall", "F1"]})
 
-    st.markdown("#### Live Order Tier Classifier")
+    st.markdown("#### 🎯 Live Order Tier Classifier")
     with st.form("tier_classifier"):
         a, b, c = st.columns(3)
         quantity = a.number_input("Quantity", 1, 20, 2, key="tier_quantity")
@@ -244,7 +255,7 @@ def render_classification(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
         d, e = st.columns(2)
         size = d.selectbox("Size", SIZES, index=1, key="tier_size")
         category = e.selectbox("Category", CATEGORIES, key="tier_category")
-        submitted = st.form_submit_button("Classify order", use_container_width=True)
+        submitted = st.form_submit_button("🔮 Classify order", use_container_width=True)
     if submitted:
         prediction = classify_order(result.model, quantity, unit_price, hour, size, category)
         st.success(f"Predicted tier: **{prediction['tier']}** · Basket total: ${prediction['basket_total']:,.2f}")
@@ -263,9 +274,12 @@ def main() -> None:
     source = joined_sales()
     schema = build_star_schema()
     filtered = render_sidebar(source)
-    st.markdown('<div class="hero-badge">🍕 MODERN DATA WAREHOUSE & ANALYTICS</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="hero-badge">🍕 MODERN DATA WAREHOUSE & ANALYTICS</div>',
+        unsafe_allow_html=True,
+    )
     st.title("Pizza MDW & Predictive Intelligence")
-    st.caption("Sales decisions, multidimensional OLAP analysis, and applied machine learning in one workspace")
+    st.caption("Sales decisions, multidimensional OLAP analysis, and applied machine learning — all in one workspace")
     tabs = st.tabs([
         "📊 Executive Overview",
         "🏛️ OLAP & Data Warehouse",

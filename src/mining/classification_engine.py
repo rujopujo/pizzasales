@@ -1,4 +1,4 @@
-"""Order tier feature relevance, decision trees, and prediction sandbox in warm pizza light mode."""
+"""Order tier feature relevance, decision trees, and prediction sandbox in pizzeria dark theme."""
 
 from __future__ import annotations
 
@@ -18,10 +18,17 @@ from sklearn.tree import DecisionTreeClassifier
 
 from src.config.settings import (
     ACCENT_AMBER,
+    ACCENT_GREEN,
     ACCENT_ORANGE,
     ACCENT_RED,
     ACCENT_YELLOW,
     CATEGORIES,
+    CHART_FONT,
+    CHART_GRID,
+    CHART_PAPER_BG,
+    CHART_PLOT_BG,
+    MUTED_TEXT,
+    PIZZA_COLORSCALE,
     SIZES,
     TEXT,
 )
@@ -84,6 +91,7 @@ def relevance_chart(scores: pd.DataFrame) -> go.Figure:
         name="Mutual Information",
         orientation="h",
         marker_color=ACCENT_ORANGE,
+        marker_line=dict(color=ACCENT_AMBER, width=0.5),
     )
     fig.add_bar(
         y=ordered["Feature"],
@@ -91,6 +99,7 @@ def relevance_chart(scores: pd.DataFrame) -> go.Figure:
         name="Random Forest Importance",
         orientation="h",
         marker_color=ACCENT_RED,
+        marker_line=dict(color=ACCENT_ORANGE, width=0.5),
     )
     fig.update_layout(
         title="Attribute relevance for order tier",
@@ -173,11 +182,12 @@ def confusion_chart(result: ClassificationResult) -> go.Figure:
         y=labels,
         zmin=0,
         zmax=1,
-        colorscale="YlOrRd",  # Yellow-Orange-Red heatmap
+        colorscale=PIZZA_COLORSCALE,
         text=np.round(result.confusion, 2),
         texttemplate="%{text:.2f}",
+        textfont=dict(color=TEXT),
         hovertemplate="Actual %{y}<br>Predicted %{x}<br>%{z:.1%}<extra></extra>",
-        colorbar=dict(title="Row share"),
+        colorbar=dict(title="Row share", tickfont=dict(color=MUTED_TEXT), titlefont=dict(color=TEXT)),
     ))
     fig.update_layout(title="Normalized confusion matrix", xaxis_title="Predicted tier", yaxis_title="Actual tier")
     fig.update_yaxes(autorange="reversed")
@@ -204,7 +214,7 @@ def roc_chart(result: ClassificationResult) -> go.Figure:
         y=[0, 1],
         mode="lines",
         name="Chance",
-        line=dict(color="rgba(120, 113, 108, 0.45)", dash="dash"),
+        line=dict(color="rgba(196, 168, 130, 0.35)", dash="dash"),
     )
     fig.update_layout(
         title="One-vs-rest ROC curves",
@@ -236,13 +246,19 @@ def classify_order(
 
 def _style(fig: go.Figure) -> go.Figure:
     fig.update_layout(
-        template="plotly_white",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=TEXT, family="Plus Jakarta Sans, sans-serif"),
+        template="plotly_dark",
+        paper_bgcolor=CHART_PAPER_BG,
+        plot_bgcolor=CHART_PLOT_BG,
+        font=dict(color=TEXT, family=CHART_FONT),
         margin=dict(l=25, r=25, t=50, b=30),
         height=400,
+        legend=dict(
+            bgcolor="rgba(42, 28, 18, 0.6)",
+            bordercolor="rgba(212, 136, 46, 0.2)",
+            borderwidth=1,
+            font=dict(color=TEXT),
+        ),
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
-    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
+    fig.update_xaxes(showgrid=True, gridcolor=CHART_GRID, zeroline=False)
+    fig.update_yaxes(showgrid=True, gridcolor=CHART_GRID, zeroline=False)
     return fig
