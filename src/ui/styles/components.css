@@ -1,0 +1,324 @@
+/*
+  Component-Specific Styles
+  Pizza Theme - Reusable UI components like cards, buttons, forms
+*/
+
+/*
+  Glassmorphic KPI Card
+  Porcelain-card with blur effect and hover animations
+*/
+.porcelain-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(var(--blur-large));
+  -webkit-backdrop-filter: blur(var(--blur-large));
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: calc(var(--spacing-md) * 1.2) calc(var(--spacing-md) * 1.3);
+  box-shadow:
+    0 4px 24px -4px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(212, 136, 46, 0.05),
+    inset 0 1px 0 rgba(255, 245, 230, 0.04);
+  transition:
+    transform var(--transition-fast) cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow var(--transition-normal),
+    border-color var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.porcelain-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-red), var(--accent-orange), var(--accent-yellow));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.porcelain-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 16px 40px -8px rgba(247, 127, 0, 0.18),
+    0 8px 16px rgba(0, 0, 0, 0.25);
+  border-color: rgba(247, 127, 0, 0.45);
+}
+
+.porcelain-card:hover::before {
+  opacity: 1;
+}
+
+/* KPI Card Typography */
+.kpi-label {
+  color: var(--muted-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+  margin-bottom: 0.25rem;
+}
+
+.kpi-value {
+  color: var(--text-color);
+  font-size: clamp(1.5rem, 2.2vw, 2.05rem);
+  font-weight: 800;
+  margin-top: 0.35rem;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.kpi-accent-pill {
+  width: 38px;
+  height: 4px;
+  border-radius: 4px;
+  margin-top: 0.85rem;
+  background: linear-gradient(90deg, var(--accent-red), var(--accent-yellow));
+}
+
+.kpi-icon {
+  font-size: 1.6rem;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+  Tabs — Ember Pill Design
+  Selected tabs show gradient like embers in oven
+*/
+div[data-baseweb="tab-list"] {
+  background: rgba(42, 28, 18, 0.65);
+  backdrop-filter: blur(12px);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-lg);
+  gap: var(--spacing-xs);
+  border: 1px solid var(--border-color);
+  margin-bottom: var(--spacing-lg);
+}
+
+button[data-baseweb="tab"] {
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--muted-text) !important;
+  border: none !important;
+  background: transparent !important;
+  transition: all 0.2s ease;
+}
+
+button[data-baseweb="tab"]:hover {
+  color: var(--accent-yellow) !important;
+  background: rgba(252, 191, 73, 0.1) !important;
+}
+
+button[data-baseweb="tab"][aria-selected="true"] {
+  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-red) 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 18px rgba(247, 127, 0, 0.35), 0 0 0 1px rgba(247, 127, 0, 0.2);
+}
+
+div[data-baseweb="tab-highlight"] {
+  display: none !important;
+}
+
+/*
+  Buttons — Oven Flame Gradient
+  Gradient buttons with hover effects
+*/
+div.stButton > button {
+  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-red) 100%);
+  color: #FFFFFF !important;
+  font-weight: 600;
+  border-radius: var(--border-radius-md);
+  border: none;
+  padding: var(--spacing-sm) calc(var(--spacing-md) * 1.3);
+  box-shadow: 0 4px 16px rgba(247, 127, 0, 0.25);
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+div.stButton > button:hover {
+  background: linear-gradient(135deg, #FF8C1A 0%, #FF4757 100%);
+  box-shadow: 0 8px 24px rgba(247, 127, 0, 0.40);
+  transform: translateY(-2px);
+  color: #FFFFFF !important;
+}
+
+/* Form Submit Button */
+button[kind="primaryFormSubmit"] {
+  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-red) 100%) !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+  border-radius: var(--border-radius-md) !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(247, 127, 0, 0.25) !important;
+}
+
+/*
+  Dataframes & Expanders — Dark Glass
+  Semi-transparent containers with borders
+*/
+div[data-testid="stDataFrame"] {
+  background: rgba(42, 28, 18, 0.6);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+div[data-testid="stExpander"] {
+  background: rgba(42, 28, 18, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+}
+
+div[data-testid="stExpander"] summary {
+  color: var(--accent-yellow);
+  font-weight: 600;
+}
+
+/*
+  Inputs, Selects, Number Inputs
+  Dark glass input styling
+*/
+div[data-baseweb="select"] > div {
+  background: rgba(42, 28, 18, 0.7) !important;
+  border-color: var(--border-color) !important;
+  border-radius: var(--border-radius-md);
+  color: var(--text-color);
+}
+
+div[data-baseweb="input"] {
+  background: rgba(42, 28, 18, 0.7) !important;
+  border-color: var(--border-color) !important;
+  border-radius: var(--border-radius-md);
+}
+
+div[data-baseweb="input"] input {
+  color: var(--text-color) !important;
+}
+
+/*
+  Sliders
+  Accent color for slider track
+*/
+div[data-testid="stSlider"] {
+  color: var(--accent-orange);
+}
+
+/*
+  Hero Banner Badge
+  Warm gradient badge with pizza emoji feel
+*/
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: linear-gradient(135deg, rgba(230, 57, 70, 0.18) 0%, rgba(247, 127, 0, 0.15) 50%, rgba(252, 191, 73, 0.12) 100%);
+  color: var(--accent-yellow);
+  padding: calc(var(--spacing-xs) * 1.5) calc(var(--spacing-sm) * 1.7);
+  border-radius: var(--border-radius-pill);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(252, 191, 73, 0.25);
+  margin-bottom: var(--spacing-sm);
+  text-transform: uppercase;
+}
+
+/*
+  Section Divider
+  Pizza-themed divider
+*/
+.pizza-divider {
+  text-align: center;
+  margin: var(--spacing-lg) 0 var(--spacing-md);
+  color: var(--muted-text);
+  font-size: 1.2rem;
+  letter-spacing: 0.5em;
+  opacity: 0.5;
+}
+
+/*
+  Info, Warning, Success boxes
+  Streamlit alert styling
+*/
+div[data-testid="stAlert"] {
+  border-radius: var(--border-radius-md);
+}
+
+/*
+  Streamlit metric overrides
+  Glassmorphic metric cards
+*/
+div[data-testid="stMetric"] {
+  background: var(--card-bg);
+  backdrop-filter: blur(var(--blur-medium));
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+}
+
+div[data-testid="stMetric"] label {
+  color: var(--muted-text) !important;
+}
+
+[data-testid="stMetricValue"] {
+  color: var(--text-color) !important;
+}
+
+/*
+  Plotly chart container
+  Rounded corners for charts
+*/
+div[data-testid="stPlotlyChart"] {
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+/*
+  Caption text
+  Muted caption styling
+*/
+.stCaption, div[data-testid="stCaptionContainer"] {
+  color: var(--muted-text) !important;
+  opacity: 0.85;
+}
+
+/*
+  Forms
+  Glassmorphic form styling
+*/
+div[data-testid="stForm"] {
+  background: rgba(42, 28, 18, 0.45);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+}
+
+/*
+  Scrollbar styling
+  Custom scrollbar with pizza colors
+*/
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(26, 15, 10, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(212, 136, 46, 0.35);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(247, 127, 0, 0.5);
+}

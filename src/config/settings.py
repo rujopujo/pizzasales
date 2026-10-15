@@ -47,3 +47,35 @@ PIZZA_COLORSCALE = [
     [0.75, "#E63946"],
     [1.0, "#7A1F2E"],
 ]
+
+# UI/Theme Constants for improved maintainability and flexibility
+# Transition durations and easing
+TRANSITION_FAST = "0.2s ease"
+TRANSITION_NORMAL = "0.25s cubic-bezier(0.16, 1, 0.3, 1)"
+TRANSITION_SLOW = "0.35s ease-in-out"
+
+# Blur effects for glassmorphism
+BLUR_SMALL = "8px"
+BLUR_MEDIUM = "12px"
+BLUR_LARGE = "16px"
+BLUR_XLARGE = "20px"
+
+# Shadow effects
+SHADOW_SUBTLE = "0 4px 16px rgba(0, 0, 0, 0.15)"
+SHADOW_NORMAL = "0 4px 24px -4px rgba(0, 0, 0, 0.35)"
+SHADOW_HOVER = "0 16px 40px -8px rgba(247, 127, 0, 0.18)"
+SHADOW_INSET = "inset 0 1px 0 rgba(255, 245, 230, 0.04)"
+
+# Border radius
+BORDER_RADIUS_SM = "8px"
+BORDER_RADIUS_MD = "10px"
+BORDER_RADIUS_LG = "14px"
+BORDER_RADIUS_XL = "16px"
+BORDER_RADIUS_PILL = "24px"
+
+# Spacing units (for consistent spacing)
+SPACING_XS = "0.5rem"
+SPACING_SM = "0.75rem"
+SPACING_MD = "1rem"
+SPACING_LG = "1.5rem"
+SPACING_XL = "2rem"

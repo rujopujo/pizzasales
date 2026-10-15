@@ -162,21 +162,8 @@ def predict_basket_price(
     }
 
 
+from src.ui.theme import style_chart
+
+
 def _style(fig: go.Figure) -> go.Figure:
-    fig.update_layout(
-        template="plotly_dark",
-        paper_bgcolor=CHART_PAPER_BG,
-        plot_bgcolor=CHART_PLOT_BG,
-        font=dict(color=TEXT, family=CHART_FONT),
-        margin=dict(l=25, r=25, t=50, b=30),
-        height=380,
-        legend=dict(
-            bgcolor="rgba(42, 28, 18, 0.6)",
-            bordercolor="rgba(212, 136, 46, 0.2)",
-            borderwidth=1,
-            font=dict(color=TEXT),
-        ),
-    )
-    fig.update_xaxes(showgrid=True, gridcolor=CHART_GRID, zeroline=False)
-    fig.update_yaxes(showgrid=True, gridcolor=CHART_GRID, zeroline=False)
-    return fig
+    return style_chart(fig, height=380)

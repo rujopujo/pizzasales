@@ -17,13 +17,19 @@ from src.mining import (
     relevance_chart, roc_chart, train_decision_tree,
     predict_basket_price, qq_plot, residual_plot, train_regressors,
 )
-from src.ui import inject_css, metric_card, section_divider
+from src.ui.auth import is_authenticated, render_login_page, render_user_profile
+from src.ui.components import inject_css, metric_card, section_divider
+from src.ui.theme import DEFAULT_THEME, render_theme_switcher, style_chart
 from src.warehouse import build_star_schema, joined_sales, roll_up, slice_dice
 
 st.set_page_config(
     page_title="Pizza MDW & Predictive Intelligence", layout="wide",
     initial_sidebar_state="expanded", page_icon="🍕",
 )
+
+if "theme" not in st.session_state:
+    st.session_state.theme = DEFAULT_THEME
+
 inject_css()
 
 
@@ -61,6 +67,7 @@ def render_sidebar(source: pd.DataFrame) -> pd.DataFrame:
     if "preset" not in st.session_state:
         st.session_state.preset = "All Time"
 
+    render_user_profile()
     st.sidebar.markdown("# 🍕 Pizza MDW")
     st.sidebar.caption("2025 sales intelligence workspace")
     st.sidebar.markdown("---")
@@ -161,14 +168,8 @@ def render_olap(frame: pd.DataFrame, schema: dict[str, pd.DataFrame]) -> None:
         title=f"Revenue drill-down · {grain}",
         xaxis_title=grain,
         yaxis_title="Revenue ($)",
-        template="plotly_dark",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color=TEXT, family=CHART_FONT),
-        height=330,
     )
-    fig.update_xaxes(showgrid=True, gridcolor=CHART_GRID)
-    fig.update_yaxes(showgrid=True, gridcolor=CHART_GRID)
+    fig = style_chart(fig, height=330)
     st.plotly_chart(fig, width="stretch")
     st.plotly_chart(pareto_chart(frame), width="stretch")
     st.caption("A line item is the fact grain. Distinct orders in grouped rows may overlap across dimension groups.")
@@ -271,13 +272,22 @@ def render_classification(filtered: pd.DataFrame, source: pd.DataFrame) -> None:
 
 
 def main() -> None:
+    if not is_authenticated():
+        render_login_page()
+        return
+
     source = joined_sales()
     schema = build_star_schema()
     filtered = render_sidebar(source)
-    st.markdown(
-        '<div class="hero-badge">🍕 MODERN DATA WAREHOUSE & ANALYTICS</div>',
-        unsafe_allow_html=True,
-    )
+    top_col1, top_col2 = st.columns([3.2, 1.8], vertical_alignment="center")
+    with top_col1:
+        st.markdown(
+            '<div class="hero-badge">🍕 MODERN DATA WAREHOUSE & ANALYTICS</div>',
+            unsafe_allow_html=True,
+        )
+    with top_col2:
+        render_theme_switcher("header")
+
     st.title("Pizza MDW & Predictive Intelligence")
     st.caption("Sales decisions, multidimensional OLAP analysis, and applied machine learning — all in one workspace")
     tabs = st.tabs([

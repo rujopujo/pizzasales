@@ -175,6 +175,7 @@ def train_decision_tree(
 
 
 def confusion_chart(result: ClassificationResult) -> go.Figure:
+    th = get_chart_theme()
     labels = result.classes.tolist()
     fig = go.Figure(go.Heatmap(
         z=result.confusion,
@@ -182,12 +183,12 @@ def confusion_chart(result: ClassificationResult) -> go.Figure:
         y=labels,
         zmin=0,
         zmax=1,
-        colorscale=PIZZA_COLORSCALE,
+        colorscale=th["heatmap_colorscale"],
         text=np.round(result.confusion, 2),
         texttemplate="%{text:.2f}",
-        textfont=dict(color=TEXT),
+        textfont=dict(color=th["font_color"]),
         hovertemplate="Actual %{y}<br>Predicted %{x}<br>%{z:.1%}<extra></extra>",
-        colorbar=dict(title="Row share", tickfont=dict(color=MUTED_TEXT), title_font=dict(color=TEXT)),
+        colorbar=dict(title="Row share", tickfont=dict(color=th["muted_color"]), title_font=dict(color=th["font_color"])),
     ))
     fig.update_layout(title="Normalized confusion matrix", xaxis_title="Predicted tier", yaxis_title="Actual tier")
     fig.update_yaxes(autorange="reversed")
@@ -244,21 +245,8 @@ def classify_order(
     }
 
 
+from src.ui.theme import get_chart_theme, style_chart
+
+
 def _style(fig: go.Figure) -> go.Figure:
-    fig.update_layout(
-        template="plotly_dark",
-        paper_bgcolor=CHART_PAPER_BG,
-        plot_bgcolor=CHART_PLOT_BG,
-        font=dict(color=TEXT, family=CHART_FONT),
-        margin=dict(l=25, r=25, t=50, b=30),
-        height=400,
-        legend=dict(
-            bgcolor="rgba(42, 28, 18, 0.6)",
-            bordercolor="rgba(212, 136, 46, 0.2)",
-            borderwidth=1,
-            font=dict(color=TEXT),
-        ),
-    )
-    fig.update_xaxes(showgrid=True, gridcolor=CHART_GRID, zeroline=False)
-    fig.update_yaxes(showgrid=True, gridcolor=CHART_GRID, zeroline=False)
-    return fig
+    return style_chart(fig, height=400)

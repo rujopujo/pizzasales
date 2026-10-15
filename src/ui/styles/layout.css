@@ -1,0 +1,116 @@
+/*
+  Layout and Structural Styles
+  Pizza Theme - Page structure, containers, sidebar
+*/
+
+/*
+  Main App Container
+  Dark brick oven background with warm gradient glows
+*/
+.stApp {
+  background-color: var(--bg-color);
+  background-image:
+    radial-gradient(ellipse at 10% 0%, rgba(231, 57, 70, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 90% 0%, rgba(247, 127, 0, 0.10) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 100%, rgba(252, 191, 73, 0.06) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(42, 28, 18, 0.4) 0%, transparent 70%);
+  color: var(--text-color);
+}
+
+/*
+  Content Container
+  Proper padding and width constraints
+*/
+.block-container {
+  padding-top: var(--spacing-lg);
+  padding-bottom: calc(var(--spacing-lg) * 2);
+  max-width: 1550px;
+}
+
+/*
+  Sidebar — Dark Wood Panel
+  Warm, inviting sidebar with gradient wood texture
+*/
+section[data-testid="stSidebar"] {
+  background: linear-gradient(180deg, #211410 0%, #1A0F0A 40%, #2A1C12 100%);
+  border-right: 1px solid var(--border-color);
+  box-shadow: 3px 0 24px rgba(0, 0, 0, 0.4);
+}
+
+section[data-testid="stSidebar"] .block-container {
+  padding-top: var(--spacing-lg);
+}
+
+/* Sidebar Typography */
+section[data-testid="stSidebar"] h1,
+section[data-testid="stSidebar"] h2,
+section[data-testid="stSidebar"] h3 {
+  color: var(--accent-yellow);
+  font-weight: 700;
+}
+
+section[data-testid="stSidebar"] p,
+section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] span {
+  color: var(--muted-text);
+}
+
+/*
+  Headings — Fiery Gradient
+  Gradient from yellow to orange to red like pizza ingredients
+*/
+h1 {
+  font-family: var(--font-heading);
+  background: linear-gradient(135deg, var(--accent-yellow) 0%, var(--accent-orange) 40%, var(--accent-red) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+h2, h3 {
+  color: var(--accent-yellow);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+h4 {
+  color: var(--accent-orange);
+  font-weight: 600;
+}
+
+/*
+  Responsive Breakpoints
+  Optimize layout for different screen sizes
+*/
+
+/* Mobile: < 640px */
+@media (max-width: 639px) {
+  .block-container h1 {
+    font-size: 1.8rem;
+  }
+
+  section[data-testid="stSidebar"] {
+    box-shadow: none;
+    border-right: none;
+  }
+
+  .block-container {
+    padding-top: var(--spacing-md);
+    padding-bottom: var(--spacing-lg);
+  }
+}
+
+/* Tablet: 640px - 1024px */
+@media (min-width: 640px) and (max-width: 1024px) {
+  .block-container {
+    max-width: 900px;
+  }
+}
+
+/* Desktop: > 1024px */
+@media (min-width: 1025px) {
+  .block-container {
+    max-width: 1550px;
+  }
+}

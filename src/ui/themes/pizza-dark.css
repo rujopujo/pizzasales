@@ -1,0 +1,268 @@
+/*
+  Pizza Dark Theme
+  Theme-specific overrides and enhancements for the pizza dark theme
+*/
+
+/*
+  Theme Variables Override
+  These can be overridden by other themes (like pizza-light)
+*/
+
+:root {
+  /* Reinforce the core pizza theme colors */
+  --bg-color: #1A0F0A;
+  --card-bg: rgba(42, 28, 18, 0.85);
+  --border-color: rgba(212, 136, 46, 0.25);
+  --text-color: #FFF5E6;
+  --muted-text: #C4A882;
+
+  /* Accent colors */
+  --accent-red: #E63946;
+  --accent-orange: #F77F00;
+  --accent-yellow: #FCBF49;
+  --accent-amber: #D4882E;
+  --accent-green: #4A9E5C;
+  --accent-cyan: #5EAAA8;
+  --accent-rose: #C1446A;
+}
+
+/*
+  Enhanced Glassmorphism
+  Subtle enhancements to the glass effect for more depth
+*/
+.porcelain-card {
+  /* Enhanced border for more definition */
+  border: 1px solid var(--border-color);
+
+  /* Enhanced shadow for more depth */
+  box-shadow:
+    0 4px 24px -4px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(212, 136, 46, 0.05),
+    inset 0 1px 0 rgba(255, 245, 230, 0.04),
+    /* Add a subtle inner glow */
+    inset 0 -1px 0 rgba(255, 245, 230, 0.02);
+}
+
+.porcelain-card:hover {
+  /* Enhanced hover effect */
+  box-shadow:
+    0 16px 40px -8px rgba(247, 127, 0, 0.18),
+    0 8px 16px rgba(0, 0, 0, 0.25),
+    /* Add lift shadow */
+    0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.porcelain-card:hover::before {
+  /* Enhanced glow on hover */
+  opacity: 1;
+  /* Add a subtle outer glow */
+  box-shadow: 0 0 8px rgba(247, 127, 0, 0.3);
+}
+
+/*
+  Interactive Element Enhancements
+  Improve feedback for interactive elements
+*/
+
+/* Buttons - enhanced hover states */
+div.stButton > button {
+  /* Add a subtle inner shadow for depth */
+  box-shadow:
+    0 4px 16px rgba(247, 127, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+div.stButton > button:hover {
+  /* Enhanced hover with lift */
+  box-shadow:
+    0 8px 24px rgba(247, 127, 0, 0.40),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Tab enhancements */
+button[data-baseweb="tab"][aria-selected="true"] {
+  /* Enhanced selected tab styling */
+  box-shadow:
+    0 4px 18px rgba(247, 127, 0, 0.35),
+    0 0 0 1px rgba(247, 127, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Form elements */
+div[data-baseweb="select"] > div,
+div[data-baseweb="input"] {
+  /* Enhanced input styling */
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+div[data-baseweb="select"] > div:focus-within,
+div[data-baseweb="input"]:focus-within {
+  /* Focus state for inputs */
+  box-shadow:
+    0 0 0 2px rgba(252, 191, 73, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: var(--accent-yellow) !important;
+}
+
+/*
+  Chart Enhancements
+  Ensure Plotly charts integrate well with the theme
+*/
+
+/* Override Streamlit's default chart container styling */
+div[data-testid="stPlotlyChart"] {
+  /* Add subtle glass effect to chart containers */
+  background: rgba(42, 28, 18, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  /* Add subtle shadow */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/*
+  Hero Badge Enhancements
+  Make the hero badge more prominent
+*/
+
+.hero-badge {
+  /* Add subtle animation capability */
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.hero-badge:hover {
+  /* Lift on hover */
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 4px 8px rgba(230, 57, 70, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/*
+  Sidebar Enhancements
+  Enhance the sidebar with subtle textures
+*/
+
+section[data-testid="stSidebar"] {
+  /* Add subtle texture to sidebar */
+  background-image:
+    linear-gradient(180deg, #211410 0%, #1A0F0A 40%, #2A1C12 100%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(255, 255, 255, 0.03) 1px,
+      rgba(255, 255, 255, 0.03) 2px
+    );
+}
+
+/*
+  Divider Enhancements
+  Make the pizza divider more distinctive
+*/
+
+.pizza-divider {
+  /* Add subtle animation */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-variant-numeric: oldstyle-nums;
+  /* Add subtle hover effect */
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.pizza-divider:hover {
+  opacity: 0.7;
+  transform: scale(1.05);
+}
+
+/*
+  Alert/Notification Enhancements
+  Improve visibility of alert boxes
+*/
+
+div[data-testid="stAlert"] {
+  /* Add glass effect to alerts */
+  background: rgba(42, 28, 18, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--border-color);
+  /* Add subtle inner shadow */
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Different alert types with pizza-themed colors */
+div[data-testid="stAlert"][data-baseweb="notification"] {
+  /* Info alert - basil green tint */
+  background: rgba(74, 158, 92, 0.1);
+  border-left: 3px solid var(--accent-green);
+}
+
+div[data-testid="stAlert"][data-baseweb="notification"][kind="warning"] {
+  /* Warning alert - tomato red tint */
+  background: rgba(230, 57, 70, 0.1);
+  border-left: 3px solid var(--accent-red);
+}
+
+div[data-testid="stAlert"][data-baseweb="notification"][kind="error"] {
+  /* Error alert - dark red */
+  background: rgba(122, 31, 46, 0.15);
+  border-left: 3px solid #7A1F2E;
+}
+
+div[data-testid="stAlert"][data-baseweb="notification"][kind="success"] {
+  /* Success alert - golden yellow */
+  background: rgba(252, 191, 73, 0.1);
+  border-left: 3px solid var(--accent-yellow);
+}
+
+/*
+  Responsive Enhancements
+  Additional responsive tweaks
+*/
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .block-container {
+    padding-left: var(--spacing-sm);
+    padding-right: var(--spacing-sm);
+  }
+
+  .hero-badge {
+    font-size: 0.7rem;
+    padding: calc(var(--spacing-xs) * 1.2) calc(var(--spacing-sm) * 1.4);
+  }
+
+  .pizza-divider {
+    font-size: 1rem;
+    letter-spacing: 0.4em;
+  }
+}
+
+/* Print styles - ensure good print output */
+@media print {
+  .stApp {
+    background: white !important;
+    color: black !important;
+  }
+
+  .porcelain-card {
+    background: white !important;
+    color: black !important;
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+  }
+
+  .hero-badge,
+  .pizza-divider {
+    display: none !important;
+  }
+}

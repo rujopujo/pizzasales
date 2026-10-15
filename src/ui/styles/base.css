@@ -1,0 +1,97 @@
+/*
+  Foundational CSS Variables and Base Styles
+  Pizza Theme Design System
+*/
+
+:root {
+  /*
+    Color Palette - Pizza Ingredient Inspired
+    Background: Dark brick oven
+    Text: Mozzarella cream
+    Accents: Tomato, cheese, basil, crust
+  */
+  --bg-color: #1A0F0A;                  /* Dark walnut / brick oven interior */
+  --card-bg: rgba(42, 28, 18, 0.85);    /* Smoky card glass */
+  --border-color: rgba(212, 136, 46, 0.25); /* Warm crust glow border */
+  --text-color: #FFF5E6;                /* Mozzarella cream text */
+  --muted-text: #C4A882;                /* Aged parmesan muted */
+
+  /* Core accent colors — the pizza ingredient palette */
+  --accent-red: #E63946;          /* Tomato sauce / pepperoni red */
+  --accent-orange: #F77F00;       /* Brick oven flame orange */
+  --accent-yellow: #FCBF49;      /* Golden crust / melted cheese */
+  --accent-amber: #D4882E;       /* Baked cheese / crust amber */
+  --accent-green: #4A9E5C;       /* Fresh basil green */
+  --accent-cyan: #5EAAA8;        /* Mediterranean olive teal */
+  --accent-rose: #C1446A;        /* Sun-dried tomato rose */
+
+  /* UI/Theme Constants */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 0.35s ease-in-out;
+
+  --blur-small: 8px;
+  --blur-medium: 12px;
+  --blur-large: 16px;
+  --blur-xlarge: 20px;
+
+  --shadow-subtle: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-normal: 0 4px 24px -4px rgba(0, 0, 0, 0.35);
+  --shadow-hover: 0 16px 40px -8px rgba(247, 127, 0, 0.18);
+  --shadow-inset: inset 0 1px 0 rgba(255, 245, 230, 0.04);
+
+  --border-radius-sm: 8px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 14px;
+  --border-radius-xl: 16px;
+  --border-radius-pill: 24px;
+
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+
+  /* Typography */
+  --font-ui: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Playfair Display', 'Georgia', serif;
+}
+
+/*
+  Base Styles
+  Apply foundational styles to ensure consistency
+*/
+
+html, body, [class*="css"] {
+  font-family: var(--font-ui);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+/* Ensure proper text rendering */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+  Accessibility Enhancements
+  Ensure focus states are visible for keyboard navigation
+*/
+
+:focus-visible {
+  outline: 2px solid var(--accent-yellow);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-md);
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
