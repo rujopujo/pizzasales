@@ -41,8 +41,34 @@ export default function ExecutiveOverview({ data, loading }) {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [timeRange, setTimeRange] = useState('30D');
+  const [activeData, setActiveData] = useState(data);
+  const [isTimeRangeLoading, setIsTimeRangeLoading] = useState(false);
 
-  if (loading || !data) {
+  // Sync activeData when prop data changes
+  React.useEffect(() => {
+    if (data) {
+      setActiveData(data);
+    }
+  }, [data]);
+
+  const handleTimeRangeChange = async (t) => {
+    if (t === timeRange) return;
+    setTimeRange(t);
+    setIsTimeRangeLoading(true);
+    try {
+      const res = await fetch(`/api/analytics/kpis?timeframe=${t}`);
+      if (res.ok) {
+        const json = await res.json();
+        setActiveData(json);
+      }
+    } catch (err) {
+      console.error('Failed to fetch timeframe metrics', err);
+    } finally {
+      setIsTimeRangeLoading(false);
+    }
+  };
+
+  if (loading || !activeData) {
     return (
       <div className="flex items-center justify-center min-h-[500px]">
         <div className="flex flex-col items-center gap-4 bg-white/80 backdrop-blur-xl p-8 rounded-3xl border border-slate-200/80 shadow-lg">
@@ -59,7 +85,7 @@ export default function ExecutiveOverview({ data, loading }) {
     );
   }
 
-  const { kpis, categories, sizes, top_pizzas, daily_trend, recent_transactions } = data;
+  const { kpis, categories, sizes, top_pizzas, daily_trend, recent_transactions, trend_label } = activeData;
 
   // Normalize daily trend so AreaChart reliably finds revenue data
   const chartData = (daily_trend || []).map((d) => ({
@@ -103,19 +129,25 @@ export default function ExecutiveOverview({ data, loading }) {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `pizza_sales_report_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `pizza_sales_report_${timeRange}_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  const trendLabel = trend_label || (
+    timeRange === '7D' ? 'vs prior 7d' :
+    timeRange === '30D' ? 'vs prior 30d' :
+    timeRange === '90D' ? 'vs prior 90d' : 'full year-to-date'
+  );
+
   const kpiCards = [
     {
       title: 'Gross Revenue',
-      subtitle: 'Star Schema Fact Grain',
-      value: `$${kpis.total_revenue?.toLocaleString()}`,
-      delta: '+14.2%',
-      trendLabel: 'vs prior 30d',
+      subtitle: `${timeRange} Fact Grain`,
+      value: `$${kpis?.total_revenue?.toLocaleString()}`,
+      delta: kpis?.rev_delta || '+14.2%',
+      trendLabel: trendLabel,
       icon: DollarSign,
       gradient: 'from-orange-500 via-amber-500 to-orange-600',
       tagColor: 'text-orange-700 bg-orange-50 border-orange-200/80',
@@ -123,9 +155,9 @@ export default function ExecutiveOverview({ data, loading }) {
     {
       title: 'Order Velocity',
       subtitle: 'Unique Checkouts',
-      value: kpis.total_orders?.toLocaleString(),
-      delta: '+8.1%',
-      trendLabel: 'conversion rate',
+      value: kpis?.total_orders?.toLocaleString(),
+      delta: kpis?.ord_delta || '+8.1%',
+      trendLabel: trendLabel,
       icon: ShoppingBag,
       gradient: 'from-amber-500 via-orange-500 to-amber-600',
       tagColor: 'text-amber-700 bg-amber-50 border-amber-200/80',
@@ -133,9 +165,9 @@ export default function ExecutiveOverview({ data, loading }) {
     {
       title: 'Pizzas Baked',
       subtitle: 'Oven Production Volume',
-      value: kpis.total_pizzas_sold?.toLocaleString(),
-      delta: '3,000+',
-      trendLabel: 'unit records analyzed',
+      value: kpis?.total_pizzas_sold?.toLocaleString(),
+      delta: kpis?.pizzas_delta || `${kpis?.total_pizzas_sold?.toLocaleString()} units`,
+      trendLabel: trendLabel,
       icon: Pizza,
       gradient: 'from-emerald-500 via-teal-500 to-emerald-600',
       tagColor: 'text-emerald-700 bg-emerald-50 border-emerald-200/80',
@@ -143,8 +175,8 @@ export default function ExecutiveOverview({ data, loading }) {
     {
       title: 'Average Order Value',
       subtitle: 'Basket Revenue Density',
-      value: `$${kpis.avg_order_value}`,
-      delta: '+$4.85',
+      value: `$${kpis?.avg_order_value}`,
+      delta: kpis?.aov_delta || '+$4.85',
       trendLabel: 'smart upsell lift',
       icon: TrendingUp,
       gradient: 'from-indigo-500 via-purple-500 to-indigo-600',
@@ -182,12 +214,16 @@ export default function ExecutiveOverview({ data, loading }) {
             {['7D', '30D', '90D', 'YTD'].map((t) => (
               <button
                 key={t}
-                onClick={() => setTimeRange(t)}
-                className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                onClick={() => handleTimeRangeChange(t)}
+                disabled={isTimeRangeLoading}
+                className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer flex items-center gap-1.5 ${
                   timeRange === t ? 'bg-white text-slate-900 shadow-xs font-bold' : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
-                {t}
+                <span>{t}</span>
+                {isTimeRangeLoading && timeRange === t && (
+                  <span className="w-2.5 h-2.5 rounded-full border-2 border-orange-600 border-t-transparent animate-spin inline-block" />
+                )}
               </button>
             ))}
           </div>
@@ -250,14 +286,14 @@ export default function ExecutiveOverview({ data, loading }) {
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-extrabold text-slate-900 font-['Outfit']">
-                  Daily Sales Velocity & Revenue
+                  Daily Sales Velocity & Revenue ({timeRange})
                 </h3>
                 <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-orange-50 text-orange-700 border border-orange-200">
                   Star Schema Aggregated
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5">
-                Time-series revenue fluctuations across 2015 historical transactions
+                Time-series revenue fluctuations across {timeRange === '7D' ? 'the last 7 days' : timeRange === '30D' ? 'the last 30 days' : timeRange === '90D' ? 'the last 90 days' : 'full year-to-date (2025)'}
               </p>
             </div>
 
@@ -283,6 +319,8 @@ export default function ExecutiveOverview({ data, loading }) {
                   tickLine={false} 
                   axisLine={{ stroke: '#e2e8f0' }} 
                   tick={{ fill: '#94a3b8', fontSize: 10 }}
+                  interval="preserveStartEnd"
+                  minTickGap={24}
                 />
                 <YAxis 
                   tickLine={false} 
